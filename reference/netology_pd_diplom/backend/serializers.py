@@ -13,6 +13,25 @@ class ContactSerializer(serializers.ModelSerializer):
             'user': {'write_only': True}
         }
 
+# создаем класс для регистрации нового пользователя
+class UserRegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'password', 'company', 'position')
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(
+            username=validated_data['email'],
+            **validated_data,
+        )
+        user.set_password(password)
+        user.save()
+        return user
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(read_only=True, many=True)

@@ -17,7 +17,7 @@ from yaml import load as load_yaml, Loader
 
 from backend.models import Shop, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
     Contact, ConfirmEmailToken
-from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
+from backend.serializers import UserRegisterSerializer, UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer, OrderSerializer, ContactSerializer
 from backend.signals import new_user_registered, new_order
 
@@ -39,28 +39,23 @@ class RegisterAccount(APIView):
             Returns:
                 JsonResponse: The response indicating the status of the operation and any errors.
             """
-        # проверяем обязательные аргументы
-        if {'first_name', 'last_name', 'email', 'password', 'company', 'position'}.issubset(request.data):
+        # проверяем обязательные аргументы (убираем необязательные аргументы)
+        if {'first_name', 'last_name', 'email', 'password'}.issubset(request.data):
 
             # проверяем пароль на сложность
-            sad = 'asd'
+
             try:
                 validate_password(request.data['password'])
-            except Exception as password_error:
-                error_array = []
-                # noinspection PyTypeChecker
-                for item in password_error:
-                    error_array.append(item)
+            except ValidationError as password_error:
+                error_array = list(password_error)
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
             else:
                 # проверяем данные для уникальности имени пользователя
 
-                user_serializer = UserSerializer(data=request.data)
+                user_serializer = UserRegisterSerializer(data=request.data)
                 if user_serializer.is_valid():
                     # сохраняем пользователя
-                    user = user_serializer.save()
-                    user.set_password(request.data['password'])
-                    user.save()
+                    user_serializer.save()
                     return JsonResponse({'Status': True})
                 else:
                     return JsonResponse({'Status': False, 'Errors': user_serializer.errors})
