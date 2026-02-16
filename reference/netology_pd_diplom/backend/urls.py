@@ -1,11 +1,18 @@
 from django.urls import path
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
+from rest_framework.routers import DefaultRouter
 
 from backend.views import PartnerUpdate, RegisterAccount, LoginAccount, CategoryView, ShopView, ProductInfoView, \
     BasketView, \
-    AccountDetails, ContactView, OrderView, PartnerState, PartnerOrders, ConfirmAccount
+    AccountDetails, ContactView, OrderView, PartnerState, PartnerOrders, ConfirmAccount, AdminUserView, AdminOrderViewSet, AdminProductViewSet
 
 app_name = 'backend'
+
+# добавляем роутинг для админки заказов
+router = DefaultRouter()
+router.register(r'admin/orders', AdminOrderViewSet) # роутинг для заказов
+router.register(r'admin/products', AdminProductViewSet) # роутинг для товаров
+
 urlpatterns = [
     path('partner/update', PartnerUpdate.as_view(), name='partner-update'),
     path('partner/state', PartnerState.as_view(), name='partner-state'),
@@ -22,5 +29,11 @@ urlpatterns = [
     path('products', ProductInfoView.as_view(), name='shops'),
     path('basket', BasketView.as_view(), name='basket'),
     path('order', OrderView.as_view(), name='order'),
+    path('admin/users/', AdminUserView.as_view()), # просмотр пользователей под админкой
+
+
 
 ]
+
+# добавляем все пути из роутинга в urlpatterns
+urlpatterns += router.urls

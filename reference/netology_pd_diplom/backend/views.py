@@ -1,6 +1,6 @@
-# from distutils.util import strtobool # надо исправлять
+#from distutils.util import strtobool # надо исправлять
 from rest_framework.request import Request
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -12,6 +12,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import ModelSerializer
+from rest_framework.viewsets import ModelViewSet
 from ujson import loads as load_json
 from yaml import load as load_yaml, Loader
 
@@ -20,6 +23,8 @@ from backend.models import Shop, Category, Product, ProductInfo, Parameter, Prod
 from backend.serializers import UserRegisterSerializer, UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
     OrderItemSerializer, OrderSerializer, ContactSerializer
 from backend.signals import new_user_registered, new_order
+
+from backend.permissions import IsAdminUser
 
 
 class RegisterAccount(APIView):
@@ -731,3 +736,28 @@ class OrderView(APIView):
                         return JsonResponse({'Status': True})
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+User = get_user_model()
+
+class AdminUserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'type', 'is_active', 'is_staff']
+
+# админка чтобы смотреть всех пользователей
+class AdminUserView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = AdminUserSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+# админка по управлению заказами
+class AdminOrderViewSet(ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+# так же админка для товаров
+class AdminProductViewSet(ModelViewSet):
+    queryset = ProductInfo.objects.all()
+    serializer_class = ProductInfoSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
