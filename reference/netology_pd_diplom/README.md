@@ -1,35 +1,17 @@
-# Пример API-сервиса для магазина
-
-[Документация по запросам в PostMan](https://documenter.getpostman.com/view/5037826/SVfJUrSc) 
+# Реализация дипломной работы API-сервиса для магазина
 
 
+## Этап 6. Реализация API views админки склада
+
+Добавление эндпоинтов для работы с админкой:
+
+    - /admin/users/ - отображает список всех пользователей
+    - /admin/orders/ - реализует работу с заказами (поддерживаются методы GET, PATCH, DELETE)
+    - /admin/products/ - реализует работу с товарами (поддерживаются методы GET, PATCH, DELETE)
+
+Данные методы актуальны только для суперпользователей с параметром is_staff=True, авторизация через Токен
 
 
-## **Получить исходный код**
-
-    git config --global user.name "YOUR_USERNAME"
-    
-    git config --global user.email "your_email_address@example.com"
-    
-    mkdir ~/my_diplom
-    
-    cd my_diplom
-    
-    git clone git@github.com:A-Iskakov/netology_pd_diplom.git
-    
-    cd netology_pd_diplom
-    
-    sudo pip3 install  --upgrade pip
-    
-    sudo pip3 install -r requirements.txt
-    
-    python3 manage.py makemigrations
-     
-    python3 manage.py migrate
-    
-    python3 manage.py createsuperuser    
-    
- 
 ## **Проверить работу модулей**
     
     
