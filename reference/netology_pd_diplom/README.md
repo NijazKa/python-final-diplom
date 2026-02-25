@@ -12,39 +12,15 @@
 Данные методы актуальны только для суперпользователей с параметром is_staff=True, авторизация через Токен
 
 
-## **Проверить работу модулей**
+## Этап 7. Реализация работы с Redis и Celery
+
+1. Через Celery реализованы отправка email во время регистрации пользователя
+2. Выгрузка данных в магазин из yaml файла. (Дополнительно на время отладки перенес фаил в папку media и настроил Django, чтобы он отдавал данный фаил по url)    
     
-    
-    python3 manage.py runserver 0.0.0.0:8000
 
 
-## **Установить СУБД (опционально)**
+## Оборачивание проекта в Docker
 
-    sudo nano  /etc/apt/sources.list.d/pgdg.list
-    
-    ----->
-    deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
-    <<----
-    
-    
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-    
-    sudo apt-get update
-    
-    sudo apt-get install postgresql-11 postgresql-server-dev-11
-    
-    sudo -u postgres psql postgres
-    
-    create user diplom_user with password 'password';
-    
-    alter role diplom_user set client_encoding to 'utf8';
-    
-    alter role diplom_user set default_transaction_isolation to 'read committed';
-    
-    alter role diplom_user set timezone to 'Europe/Moscow';
-    
-    create database diplom_db owner mploy;
-    alter user mploy createdb;
-
-    
+Реализован Docker контейнер \
+(не смог победить ошибку Redis при старте Celery, случайным образом удалось решить проблему через Dockerfile методом ручной установки пакета Redis)
    
