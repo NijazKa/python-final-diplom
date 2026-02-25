@@ -11,8 +11,6 @@ from backend.models import Shop, Category, Product, ProductInfo, Parameter, Prod
 
 
 
-
-
 @shared_task
 def test_task():
     print("тестовая задача выполнена")

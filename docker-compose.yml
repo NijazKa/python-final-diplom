@@ -1,0 +1,45 @@
+services:
+  web:
+    build: ./reference/netology_pd_diplom
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./reference/netology_pd_diplom:/usr/src/app/
+    working_dir: /usr/src/app
+    ports:
+      - 8000:8000
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=2hs6$#5om031nujz4staql9mbuste=!dc^6)4opsjq!vvjxzj@
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  celery:
+    build: ./reference/netology_pd_diplom
+    command: celery -A netology_pd_diplom worker --loglevel=info
+    user: "1000:1000"
+    working_dir: /usr/src/app
+    volumes:
+      - ./reference/netology_pd_diplom:/usr/src/app
+      - ./reference/netology_pd_diplom/logs:/usr/src/app/logs
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=2hs6$#5om031nujz4staql9mbuste=!dc^6)4opsjq!vvjxzj@
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+      - web
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
