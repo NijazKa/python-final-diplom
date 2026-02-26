@@ -1,4 +1,5 @@
-from distutils.util import strtobool # надо исправлять
+from distutils.util import strtobool
+from drf_spectacular.utils import extend_schema
 from rest_framework.request import Request
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
@@ -103,7 +104,7 @@ class ConfirmAccount(APIView):
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
-
+@extend_schema(tags=["Details"]) # удобное добавление тэгов для docs
 class AccountDetails(APIView):
     """
     A class for managing user account details.
@@ -652,7 +653,6 @@ class ContactView(APIView):
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
-
 class OrderView(APIView):
     """
     Класс для получения и размешения заказов пользователями
@@ -689,6 +689,7 @@ class OrderView(APIView):
         return Response(serializer.data)
 
     # разместить заказ из корзины
+    @extend_schema(summary="Короткий метод описания. Данный метод позволяет разместить заказ из корзины")
     def post(self, request, *args, **kwargs):
         """
                Put an order and send a notification.
@@ -722,12 +723,15 @@ class OrderView(APIView):
 User = get_user_model()
 
 class AdminUserSerializer(ModelSerializer):
+
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name', 'last_name', 'type', 'is_active', 'is_staff']
 
 # админка чтобы смотреть всех пользователей
+
 class AdminUserView(ListAPIView):
+    """Класс для просмотра всех пользователей"""
     queryset = User.objects.all()
     serializer_class = AdminUserSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]

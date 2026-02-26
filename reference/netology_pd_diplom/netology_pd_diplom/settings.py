@@ -166,7 +166,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'Магазин на Django',
+    'DESCRIPTION': 'учебный проект по работе с Django',
     'VERSION': '1.0.0',
 }
