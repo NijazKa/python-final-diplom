@@ -27,9 +27,13 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/api/v1/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/api/v1/'
+LOGIN_URL = '/auth/login/github/'
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = '/admin/'
 # Application definition
 
 INSTALLED_APPS = [
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,6 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AUTH_USER_MODEL = 'backend.User'
 
@@ -166,7 +171,7 @@ REST_FRAMEWORK = {
     ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
 
     ),
