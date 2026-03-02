@@ -6,10 +6,14 @@ from celery import shared_task
 from requests import get
 from yaml import load as load_yaml, Loader
 from django.db import transaction
+from easy_thumbnails.files import get_thumbnailer
+from easy_thumbnails.options import ThumbnailOptions
+from django.core.files.storage import default_storage
+import logging
 
 from backend.models import Shop, Category, Product, ProductInfo, Parameter, ProductParameter
 
-
+logger = logging.getLogger(__name__)
 
 @shared_task
 def test_task():
@@ -87,3 +91,42 @@ def process_partner_yaml(self, url, user_id):
 
     except Exception as e:
         self.retry(exc=e, countdown=5, max_retries=3)
+
+@shared_task
+def generate_thumbnail(image_path, alias_name, **options):
+    """
+    Асинхронная генерация миниатюры
+    """
+    try:
+        if default_storage.exists(image_path):
+            thumbnail_options = ThumbnailOptions(options)
+            thumbnailer = get_thumbnailer(image_path)
+            thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
+            logger.info(f'Thumbnail generated for {image_path} with alias {alias_name}')
+            return thumbnail.url
+    except Exception as e:
+        logger.error(f'Error generating thumbnail for {image_path}: {str(e)}')
+        return None
+
+@shared_task
+def generate_all_thumbnails(image_path, aliases_list):
+    """
+    Генерация всех миниатюр для изображения
+    """
+    results = {}
+    for alias_name in aliases_list:
+        result = generate_thumbnail.delay(image_path, alias_name)
+        results[alias_name] = result.id
+    return results
+
+@shared_task
+def cleanup_thumbnails(image_path):
+    """
+    Очистка миниатюр при удалении изображения
+    """
+    try:
+        thumbnailer = get_thumbnailer(image_path)
+        thumbnailer.delete_thumbnails()
+        logger.info(f'Thumbnails cleaned for {image_path}')
+    except Exception as e:
+        logger.error(f'Error cleaning thumbnails for {image_path}: {str(e)}')

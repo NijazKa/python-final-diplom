@@ -1,3 +1,4 @@
+easy-thumbnails
 amqp==5.3.1
 asgiref==3.11.1
 attrs==25.4.0
