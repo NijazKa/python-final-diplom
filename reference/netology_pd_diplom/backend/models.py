@@ -149,6 +149,17 @@ class Category(models.Model):
 class Product(models.Model):
     objects = models.manager.Manager()
     name = models.CharField(max_length=80, verbose_name='Название')
+    image = ThumbnailerImageField(
+        verbose_name='Изображение',
+        upload_to='products/images/',
+        blank=True,
+        null=True,
+        resize_source={
+            'size': (1200, 1200),
+            'crop': False,
+            'upscale': False,
+        }
+    )
     category = models.ForeignKey(Category, verbose_name='Категория', related_name='products', blank=True,
                                  on_delete=models.CASCADE)
 
