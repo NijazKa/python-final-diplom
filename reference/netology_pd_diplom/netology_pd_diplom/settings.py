@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'backend',
     'drf_spectacular',
     'social_django',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -212,3 +213,20 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ""
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ""
 SOCIAL_AUTH_GITHUB_KEY = "Ov23liI6YV3kW6N7LMn9"
 SOCIAL_AUTH_GITHUB_SECRET = "bfab6a396313ea03339f28f849b7350f1e05286f"
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'avatar_small': {'size': (100, 100), 'crop': True, 'upscale': True},
+        'avatar_medium': {'size': (200, 200), 'crop': True, 'upscale': True},
+        'product_small': {'size': (200, 200), 'crop': True, 'upscale': True},
+        'product_medium': {'size': (500, 500), 'crop': False, 'upscale': True},
+        'product_large': {'size': (800, 800), 'crop': False, 'upscale': True},
+    },
+}
+
+
+THUMBNAIL_CELERY = True
+THUMBNAIL_CELERY_TASK = 'backend.tasks.generate_thumbnail'
+THUMBNAIL_DEFAULT_STORAGE = 'django.core.files.storage.FileSystemStorage'
+THUMBNAIL_PRESERVE_EXTENSIONS = ('jpg', 'jpeg', 'png')
+THUMBNAIL_QUALITY = 95
