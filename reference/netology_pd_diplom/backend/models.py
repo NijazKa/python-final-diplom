@@ -4,6 +4,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
+from easy_thumbnails.fields import ThumbnailerImageField
 
 STATE_CHOICES = (
     ('basket', 'Статус корзины'),
@@ -71,6 +72,17 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
     position = models.CharField(verbose_name='Должность', max_length=40, blank=True)
+    avatar = ThumbnailerImageField(
+        verbose_name='Аватар',
+        upload_to='users/avatars/',
+        blank=True,
+        null=True,
+        resize_source={
+            'size': (800, 800),
+            'crop': False,
+            'upscale': False,
+        }
+    )
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         _('username'),
