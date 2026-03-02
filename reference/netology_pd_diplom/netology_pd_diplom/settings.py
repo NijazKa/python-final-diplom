@@ -25,7 +25,8 @@ SECRET_KEY = '2hs6$#5om031nujz4staql9mbuste=!dc^6)4opsjq!vvjxzj@'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/api/v1/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/api/v1/'
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'backend',
     'drf_spectacular',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -103,6 +105,24 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'backend.pipeline.ensure_email',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "social_core.backends.github.GithubOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -179,3 +199,11 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'учебный проект по работе с Django',
     'VERSION': '1.0.0',
 }
+SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
+SOCIAL_AUTH_GITHUB_EXTRA_DATA = ['email']
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ""
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ""
+SOCIAL_AUTH_GITHUB_KEY = "Ov23liI6YV3kW6N7LMn9"
+SOCIAL_AUTH_GITHUB_SECRET = "bfab6a396313ea03339f28f849b7350f1e05286f"
