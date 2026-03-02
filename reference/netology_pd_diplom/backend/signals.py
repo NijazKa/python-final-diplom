@@ -2,11 +2,12 @@ from typing import Type
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver, Signal
 from django_rest_passwordreset.signals import reset_password_token_created
 
-from backend.models import ConfirmEmailToken, User
+from backend.models import ConfirmEmailToken, User, User, Product, ProductImage
+from backend.tasks import generate_all_thumbnails, cleanup_thumbnails
 
 new_user_registered = Signal()
 
@@ -80,3 +81,49 @@ def new_order_signal(user_id, **kwargs):
         [user.email]
     )
     msg.send()
+
+
+@receiver(post_save, sender=User)
+def handle_user_avatar(sender, instance, created, **kwargs):
+    """
+    Генерация миниатюр аватара пользователя
+    """
+    if instance.avatar:
+        generate_all_thumbnails.delay(
+            instance.avatar.name,
+            ['avatar_small', 'avatar_medium']
+        )
+
+@receiver(post_save, sender=Product)
+def handle_product_image(sender, instance, created, **kwargs):
+    """
+    Генерация миниатюр изображения товара
+    """
+    if instance.image:
+        generate_all_thumbnails.delay(
+            instance.image.name,
+            ['product_small', 'product_medium', 'product_large']
+        )
+
+@receiver(post_save, sender=ProductImage)
+def handle_additional_image(sender, instance, created, **kwargs):
+    """
+    Генерация миниатюр для дополнительных изображений
+    """
+    if instance.image:
+        generate_all_thumbnails.delay(
+            instance.image.name,
+            ['product_small', 'product_medium']
+        )
+
+@receiver(pre_delete, sender=User)
+@receiver(pre_delete, sender=Product)
+@receiver(pre_delete, sender=ProductImage)
+def cleanup_image_thumbnails(sender, instance, **kwargs):
+    """
+    Очистка миниатюр при удалении объекта
+    """
+    if hasattr(instance, 'avatar') and instance.avatar:
+        cleanup_thumbnails.delay(instance.avatar.name)
+    if hasattr(instance, 'image') and instance.image:
+        cleanup_thumbnails.delay(instance.image.name)

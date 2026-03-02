@@ -325,3 +325,31 @@ class ConfirmEmailToken(models.Model):
     def __str__(self):
         return "Password reset token for user {user}".format(user=self.user)
 
+class ProductImage(models.Model):
+    objects = models.manager.Manager()
+    product = models.ForeignKey(
+        Product,
+        verbose_name='Товар',
+        related_name='additional_images',
+        on_delete=models.CASCADE
+    )
+    image = ThumbnailerImageField(
+        verbose_name='Изображение',
+        upload_to='products/additional/'
+    )
+    is_main = models.BooleanField(
+        verbose_name='Главное изображение',
+        default=False
+    )
+    order = models.PositiveIntegerField(
+        verbose_name='Порядок',
+        default=0
+    )
+
+    class Meta:
+        verbose_name = 'Изображение товара'
+        verbose_name_plural = 'Изображения товаров'
+        ordering = ['order']
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
