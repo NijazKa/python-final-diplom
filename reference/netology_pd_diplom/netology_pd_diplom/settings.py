@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'social_django',
     'easy_thumbnails',
+    'cachalot',
 ]
 
 MIDDLEWARE = [
