@@ -18,9 +18,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from backend.views import test_error
 
 
 urlpatterns = [
+    path('test-error/', test_error, name='test_error'),
     path('jet/', include('jet.urls', 'jet')),
     path('admin/', admin.site.urls),
     path('api/v1/', include('backend.urls', namespace='backend')),

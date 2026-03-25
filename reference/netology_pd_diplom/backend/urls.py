@@ -14,6 +14,7 @@ router.register(r'admin/orders', AdminOrderViewSet) # роутинг для за
 router.register(r'admin/products', AdminProductViewSet) # роутинг для товаров
 
 urlpatterns = [
+
     path('partner/update', PartnerUpdate.as_view(), name='partner-update'),
     path('partner/state', PartnerState.as_view(), name='partner-state'),
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),

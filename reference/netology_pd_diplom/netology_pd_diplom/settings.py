@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import rollbar
+
+
+# ROLLBAR_ACCESS_TOKEN = os.getenv('ROLLBAR_ACCESS_TOKEN')
+# ROLLBAR_ENVIRONMENT = os.getenv('ROLLBAR_ENVIRONMENT', 'development')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -57,6 +62,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
+
 ]
 
 ROOT_URLCONF = 'netology_pd_diplom.urls'
@@ -230,3 +237,16 @@ THUMBNAIL_CELERY_TASK = 'backend.tasks.generate_thumbnail'
 THUMBNAIL_DEFAULT_STORAGE = 'django.core.files.storage.FileSystemStorage'
 THUMBNAIL_PRESERVE_EXTENSIONS = ('jpg', 'jpeg', 'png')
 THUMBNAIL_QUALITY = 95
+
+
+ROLLBAR = {
+    'access_token': 'd5cd11c563314b459beaf73e4adef6ae',
+    'environment': 'development',
+}
+
+rollbar.init(
+    access_token=ROLLBAR['access_token'],
+    environment=ROLLBAR['environment'],
+    root=BASE_DIR,
+    allow_logging_basic_config=False,
+)

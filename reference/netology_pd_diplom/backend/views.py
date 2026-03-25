@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from requests import get
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
@@ -747,3 +747,9 @@ class AdminProductViewSet(ModelViewSet):
     queryset = ProductInfo.objects.all()
     serializer_class = ProductInfoSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
+
+def test_error(request):
+    """Trigger a test error for Rollbar."""
+    a = None
+    a.hello()  # This will raise AttributeError
+    return HttpResponse("This will not be reached")
